@@ -1,0 +1,16 @@
+﻿  ChildDlg.cpp
+c:\users\kimcj\documents\visual studio 2015\projects\userclient\userclient\childdlg.cpp(56): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1850): note: 'inet_addr' 선언을 참조하십시오.
+c:\users\kimcj\documents\visual studio 2015\projects\userclient\userclient\childdlg.cpp(61): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1850): note: 'inet_addr' 선언을 참조하십시오.
+c:\users\kimcj\documents\visual studio 2015\projects\userclient\userclient\childdlg.cpp(73): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: 'fopen' 선언을 참조하십시오.
+c:\users\kimcj\documents\visual studio 2015\projects\userclient\userclient\childdlg.cpp(42): warning C4101: 'hwnd' :참조되지 않은 지역 변수입니다.
+c:\users\kimcj\documents\visual studio 2015\projects\userclient\userclient\childdlg.cpp(43): warning C4101: 'cwnd' :참조되지 않은 지역 변수입니다.
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  UserClientDlg.cpp
+  UserClient.cpp
+  코드를 생성하고 있습니다...
+  UserClient.vcxproj -> C:\Users\kimcj\Documents\Visual Studio 2015\Projects\UserClient\Debug\UserClient.exe
+  UserClient.vcxproj -> C:\Users\kimcj\Documents\Visual Studio 2015\Projects\UserClient\Debug\UserClient.pdb (Partial PDB)

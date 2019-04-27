@@ -1,0 +1,8 @@
+﻿  cjsocket.cpp
+c:\users\kimcj\documents\visual studio 2015\projects\remoteclient\remoteclient\cjsocket.cpp(38): warning C4477: 'printf' : 서식 문자열 '%s'에 'char *' 형식의 인수가 필요하지만 variadic 인수 2의 형식이 'LPCTSTR'입니다.
+  c:\users\kimcj\documents\visual studio 2015\projects\remoteclient\remoteclient\cjsocket.cpp(38): note: 서식 문자열에서 '%ls'을(를) 사용하는 것이 좋습니다.
+  c:\users\kimcj\documents\visual studio 2015\projects\remoteclient\remoteclient\cjsocket.cpp(38): note: 서식 문자열에서 '%lls'을(를) 사용하는 것이 좋습니다.
+  c:\users\kimcj\documents\visual studio 2015\projects\remoteclient\remoteclient\cjsocket.cpp(38): note: 서식 문자열에서 '%Ls'을(를) 사용하는 것이 좋습니다.
+  c:\users\kimcj\documents\visual studio 2015\projects\remoteclient\remoteclient\cjsocket.cpp(38): note: 서식 문자열에서 '%ws'을(를) 사용하는 것이 좋습니다.
+  RemoteClient.vcxproj -> C:\Users\kimcj\Documents\Visual Studio 2015\Projects\RemoteClient\Debug\RemoteClient.exe
+  RemoteClient.vcxproj -> C:\Users\kimcj\Documents\Visual Studio 2015\Projects\RemoteClient\Debug\RemoteClient.pdb (Partial PDB)

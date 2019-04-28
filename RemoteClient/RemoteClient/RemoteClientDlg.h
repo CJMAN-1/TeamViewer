@@ -4,7 +4,7 @@
 
 #pragma once
 #include <iostream>
-#define BUFSIZE 168643
+#define BUFSIZE 
 using namespace std;
 // CRemoteClientDlg 대화 상자
 class CRemoteClientDlg : public CDialogEx
@@ -34,4 +34,17 @@ protected:
 public:
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedButton1();
+protected://화면 캡쳐 관련부분
+	int screenX, screenY;
+	CImage capScreen;
+	CWnd *pDesktopWnd;
+	HDC hDC;
+	//CWindowDC DesktopWndDC;
+	IStream *imageBufferStream;
+	HGLOBAL imageBuffer;
+	int jpgDataSize;
+
+	void GetScreenSize();
+	int CopyScreenTo(CImage& cimage);
+	HGLOBAL* MakeMemoryBuffer(int size);
 };

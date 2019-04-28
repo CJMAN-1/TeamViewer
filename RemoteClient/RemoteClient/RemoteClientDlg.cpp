@@ -47,50 +47,50 @@ BOOL CRemoteClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	int retval;
-	WSADATA wsa;
 
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+	int nx = 0, ny = 0;
+	CImage capimage;
+	CWnd *pDesktopWnd = GetDesktopWindow();
+	HDC hDC = NULL;
+	CWindowDC DeskTopDC(pDesktopWnd);
+	nx = GetSystemMetrics(SM_CXSCREEN);
+	ny = GetSystemMetrics(SM_CYSCREEN);
+	////////////
+	capimage.Create(nx, ny, 32);
+	hDC = capimage.GetDC();
+	BitBlt(hDC, 0, 0, nx, ny, DeskTopDC.m_hDC, 0, 0, SRCCOPY);
+	////////////////
+	IStream *p_stream = NULL;
+	HGLOBAL h_buffer = ::GlobalAlloc(GMEM_MOVEABLE, 1024 * 1024);
 
-	{
+	if (h_buffer != NULL) {
+		int jpg_data_size = 0;
 
-		return -1;
+	
+		if (::CreateStreamOnHGlobal(h_buffer, FALSE, &p_stream) == S_OK) {
+			capimage.Save(p_stream, Gdiplus::ImageFormatJPEG);
+			capimage.Save(_T("cap.jpg"), Gdiplus::ImageFormatJPEG);
+			capimage.ReleaseDC();
+		}
+		void *p_jpg_data = ::GlobalLock(h_buffer);
 
+		for (int i = 100000; i < 500000; i++) {
+			if (*((char *)p_jpg_data + i) == (char)0xff) {
+				if (*((char *)p_jpg_data + i +1) == (char)0xd9) {
+					printf("sd");
+					FILE * tlqk ;
+					tlqk = fopen("tlqk.txt", "w");
+					fprintf(tlqk, "%d", i);
+					fclose(tlqk);
+					break;
+				}
+			}
+		}
+		::GlobalFree(h_buffer);
 	}
-	SOCKET sock;
-	SOCKADDR_IN server;
-	sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	char buf[BUFSIZE] = { 0, };
-	int len = BUFSIZE;
 
-	ZeroMemory(&server, sizeof(server));
-	server.sin_family = AF_INET;
-	server.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-	server.sin_port = htons(9000);
+	
 
-	retval = bind(sock, (sockaddr*)&server, sizeof(server));
-
-	SOCKADDR_IN clientaddr;
-	int addrlen = sizeof(clientaddr);
-
-	SYSTEMTIME cur_time;
-	GetLocalTime(&cur_time);
-
-	cout << cur_time.wMinute << endl;
-	cout << cur_time.wSecond << endl;
-	cout << cur_time.wMilliseconds % 100 << endl;
-	long a = 0;
-
-
-	for (int i = 0; i < 168; i++) {
-		retval = recvfrom(sock, buf + i * 1000, 1000, 0, (sockaddr *)&clientaddr, &addrlen);
-	}
-
-
-
-	FILE* file = fopen("tlqk.jpg", "wb");
-	fwrite(buf, len, 1, file);
-	fclose(file);
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 

@@ -33,7 +33,70 @@ BEGIN_MESSAGE_MAP(CRemoteClientDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CRemoteClientDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_BUTTON1, &CRemoteClientDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
+///////////////////////////////////////
 
+//화면의 크기를 얻어온다.
+void CRemoteClientDlg::GetScreenSize() {
+	screenX = GetSystemMetrics(SM_CXSCREEN);
+	screenY = GetSystemMetrics(SM_CYSCREEN);
+}
+
+//바탕화면과 CImage객체의 DC를 멤버변수에 저장한다.
+void CRemoteClientDlg::GetScnImageDC(CImage& image) {
+	pDesktopWnd = GetDesktopWindow();
+	DeskTopDC = pDesktopWnd->GetDC();
+
+	image.Create(screenX, screenY, 32);
+	hDC = image.GetDC();
+}
+
+//현재 화면을 cimage에 복사한다.
+void CRemoteClientDlg::CaptureScreenTo(CImage& screen) {
+	BitBlt(hDC, 0, 0, screenX, screenY, DeskTopDC->m_hDC, 0, 0, SRCCOPY);
+}
+
+//HGLOBAL 버퍼를 만들고 사용할수 있도록 void형 포인터를 반환한다.
+void* CRemoteClientDlg::MakeMemoryBuffer(int size) {
+	imageBuffer = ::GlobalAlloc(GMEM_MOVEABLE, size);
+	return ::GlobalLock(imageBuffer);
+}
+
+//memoryStream을 buffer에 열어 screen을 저장하고 screen의 크기를 반환한다.
+//수정해야함
+int CRemoteClientDlg::SaveScreenOnMemory(IStream *memoryStream, HGLOBAL* buffer, CImage& screen) {
+	if (imageBuffer != NULL) {
+		if (::CreateStreamOnHGlobal(*buffer, FALSE, &memoryStream) == S_OK) {
+			screen.Save(memoryStream, Gdiplus::ImageFormatJPEG);
+			screen.Save(_T("cap.jpg"), Gdiplus::ImageFormatJPEG);
+
+		}
+		int i;
+		for (i = MIN_IMAGE_SIZE; i < MAX_IMAGE_SIZE; i++) {
+			if (*((char *)pJpgData + i) == END_JPG_H) {
+				if (*((char *)pJpgData + i + 1) == END_JPG_L) {
+					FILE * tlqk;
+					tlqk = fopen("tlqk.txt", "w");
+					fprintf(tlqk, "%d", i);
+					fclose(tlqk);
+					break;
+				}
+			}
+		}
+
+		return i+1;
+	}
+	else {
+		return -1;
+	}
+}
+
+//캡쳐하고  저장 한번에 하는거
+int CRemoteClientDlg::CapturenSaveOnMemory(IStream *memoryStream, HGLOBAL* buffer, CImage& screen) {
+	CaptureScreenTo(screen);
+
+	return SaveScreenOnMemory(memoryStream, buffer, screen);
+}
+//////////////////////////////////////
 
 // CRemoteClientDlg 메시지 처리기
 
@@ -48,49 +111,19 @@ BOOL CRemoteClientDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
-	int nx = 0, ny = 0;
-	CImage capimage;
-	CWnd *pDesktopWnd = GetDesktopWindow();
-	HDC hDC = NULL;
-	CWindowDC DeskTopDC(pDesktopWnd);
-	nx = GetSystemMetrics(SM_CXSCREEN);
-	ny = GetSystemMetrics(SM_CYSCREEN);
-	////////////
-	capimage.Create(nx, ny, 32);
-	hDC = capimage.GetDC();
-	BitBlt(hDC, 0, 0, nx, ny, DeskTopDC.m_hDC, 0, 0, SRCCOPY);
-	////////////////
-	IStream *p_stream = NULL;
-	HGLOBAL h_buffer = ::GlobalAlloc(GMEM_MOVEABLE, 1024 * 1024);
 
-	if (h_buffer != NULL) {
-		int jpg_data_size = 0;
+	GetScreenSize();
+	GetScnImageDC(capScreen);
+	CaptureScreenTo(capScreen);
 
+	pJpgData = MakeMemoryBuffer(IMAGEBUFSIZE);
+
+	jpgDataSize = CapturenSaveOnMemory(imageBufferStream, &imageBuffer, capScreen);
 	
-		if (::CreateStreamOnHGlobal(h_buffer, FALSE, &p_stream) == S_OK) {
-			capimage.Save(p_stream, Gdiplus::ImageFormatJPEG);
-			capimage.Save(_T("cap.jpg"), Gdiplus::ImageFormatJPEG);
-			capimage.ReleaseDC();
-		}
-		void *p_jpg_data = ::GlobalLock(h_buffer);
+	SOCK.BindUdpSock(9000);
+	SOCK.RegisterOtherSock("127.0.0.1", 9900);
 
-		for (int i = 100000; i < 500000; i++) {
-			if (*((char *)p_jpg_data + i) == (char)0xff) {
-				if (*((char *)p_jpg_data + i +1) == (char)0xd9) {
-					printf("sd");
-					FILE * tlqk ;
-					tlqk = fopen("tlqk.txt", "w");
-					fprintf(tlqk, "%d", i);
-					fclose(tlqk);
-					break;
-				}
-			}
-		}
-		::GlobalFree(h_buffer);
-	}
-
-	
-
+	SOCK.TransImage((char*)pJpgData, jpgDataSize);
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 

@@ -12,7 +12,7 @@ cjSocket::~cjSocket()
 {
 }
 
-void cjSocket::err_quit(char* msg){
+void cjSocket::err_quit(char* msg) {
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -27,7 +27,7 @@ void cjSocket::err_quit(char* msg){
 	exit(-1);
 }
 
-void cjSocket::err_display(char* msg){
+void cjSocket::err_display(char* msg) {
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -68,7 +68,7 @@ void cjSocket::GetCurTime() {
 
 void cjSocket::TransMessage(char *pBuffer) {
 	//TODO : 타임스탬프 찍어서 패킷 보내기, 통신 프로그램 어떻게 관리하나???
-	
+
 }
 
 //이미지 파일을 전송한다.

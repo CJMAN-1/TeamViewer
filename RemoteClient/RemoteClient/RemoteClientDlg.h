@@ -4,8 +4,9 @@
 
 #pragma once
 #include <iostream>
-#define BUFSIZE 
+#include "cjsocket.h"
 using namespace std;
+
 // CRemoteClientDlg 대화 상자
 class CRemoteClientDlg : public CDialogEx
 {
@@ -39,12 +40,26 @@ protected://화면 캡쳐 관련부분
 	CImage capScreen;
 	CWnd *pDesktopWnd;
 	HDC hDC;
-	//CWindowDC DesktopWndDC;
+	CDC* DeskTopDC;
 	IStream *imageBufferStream;
 	HGLOBAL imageBuffer;
 	int jpgDataSize;
-
+	void* pJpgData;
+	cjSocket SOCK;
+	
+	//TODO : DC ,buffer 해제하는 부분들 나중에 신경쓰기
 	void GetScreenSize();
-	int CopyScreenTo(CImage& cimage);
-	HGLOBAL* MakeMemoryBuffer(int size);
+	void GetScnImageDC(CImage& image);
+	void CaptureScreenTo(CImage& screen);
+	void* MakeMemoryBuffer(int size);
+	int SaveScreenOnMemory(IStream *memoryStream, HGLOBAL* buffer, CImage& screen);
+	int CapturenSaveOnMemory(IStream *memoryStream, HGLOBAL* buffer, CImage& screen);
+
+	enum {//image 관련 enum
+		IMAGEBUFSIZE = 500000,
+		MIN_IMAGE_SIZE = 100000,
+		MAX_IMAGE_SIZE = 500000,
+		END_JPG_H = (char)0xff,
+		END_JPG_L = (char)0xd9
+	};
 };

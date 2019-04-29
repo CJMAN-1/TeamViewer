@@ -36,6 +36,68 @@ BEGIN_MESSAGE_MAP(CUserClientDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CUserClientDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
+//화면의 크기를 얻어온다.
+void CUserClientDlg::GetScreenSize() {
+	screenX = GetSystemMetrics(SM_CXSCREEN);
+	screenY = GetSystemMetrics(SM_CYSCREEN);
+}
+
+//바탕화면과 CImage객체의 DC를 멤버변수에 저장한다.
+void CUserClientDlg::GetScnImageDC(CImage& image) {
+	pDesktopWnd = GetDesktopWindow();
+	DeskTopDC = pDesktopWnd->GetDC();
+
+	image.Create(screenX, screenY, 32);
+	hDC = image.GetDC();
+}
+
+//현재 화면을 cimage에 복사한다.
+void CUserClientDlg::CaptureScreenTo(CImage& screen) {
+	BitBlt(hDC, 0, 0, screenX, screenY, DeskTopDC->m_hDC, 0, 0, SRCCOPY);
+}
+
+//HGLOBAL 버퍼를 만들고 사용할수 있도록 void형 포인터를 반환한다.
+void* CUserClientDlg::MakeMemoryBuffer(int size) {
+	imageBuffer = ::GlobalAlloc(GMEM_MOVEABLE, size);
+	return ::GlobalLock(imageBuffer);
+}
+
+//memoryStream을 buffer에 열어 screen을 저장하고 screen의 크기를 반환한다.
+//수정해야함
+int CUserClientDlg::SaveScreenOnMemory(IStream *memoryStream, HGLOBAL* buffer, CImage& screen) {
+	if (imageBuffer != NULL) {
+		if (::CreateStreamOnHGlobal(*buffer, FALSE, &memoryStream) == S_OK) {
+			screen.Save(memoryStream, Gdiplus::ImageFormatJPEG);
+			screen.Save(_T("cap.jpg"), Gdiplus::ImageFormatJPEG);
+
+		}
+		int i;
+		for (i = MIN_IMAGE_SIZE; i < MAX_IMAGE_SIZE; i++) {
+			if (*((char *)pJpgData + i) == END_JPG_H) {
+				if (*((char *)pJpgData + i + 1) == END_JPG_L) {
+					FILE * tlqk;
+					tlqk = fopen("tlqk.txt", "w");
+					fprintf(tlqk, "%d", i);
+					fclose(tlqk);
+					break;
+				}
+			}
+		}
+
+		return i + 1;
+	}
+	else {
+		return -1;
+	}
+}
+
+//캡쳐하고  저장 한번에 하는거
+int CUserClientDlg::CapturenSaveOnMemory(IStream *memoryStream, HGLOBAL* buffer, CImage& screen) {
+	CaptureScreenTo(screen);
+
+	return SaveScreenOnMemory(memoryStream, buffer, screen);
+}
+//////////////////////////////////////
 
 // CUserClientDlg 메시지 처리기
 
@@ -49,7 +111,10 @@ BOOL CUserClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 	
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-
+	SOCK.BindUdpSock(9900);
+	SOCK.RegisterOtherSock("127.0.0.1", 9000);
+	int addrlen = sizeof(SOCK.other_sockAddr);
+//	recvfrom(*SOCK.udp_sock, buf + i * 1000, 1000, 0, (sockaddr *)&SOCK.other_sockAddr,&addrlen);
 
 	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }

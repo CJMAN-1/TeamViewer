@@ -9,9 +9,7 @@
 #endif
 
 #include "resource.h"		// 주 기호입니다.
-#include <iostream>
-#include <fstream>
-using namespace std;
+
 
 // CUserClientApp:
 // 이 클래스의 구현에 대해서는 UserClient.cpp을 참조하십시오.

@@ -18,10 +18,13 @@ public:
 		DATATYPE_SIZE = 1,
 		HEADER_SIZE = 8,
 		IMAGEDATA_SIZE = IMAGETRANSBUF_SIZE - HEADER_SIZE,
-		IMAGE_TYPE = 2,
-		MESSAGE_TYPE = 1
+		IMAGE_TYPE = 1,
+		MESSAGE_TYPE = 2,
+		IMAGESIZE_TYPE= 3
 	};
+
 	int retval;
+	int addrLen;
 	WSADATA wsa;
 	SOCKET* udp_sock;
 	SOCKADDR_IN my_sockAddr;
@@ -41,4 +44,4 @@ public:
 	void PutImage(char* source, char* destination, int index);
 	void PutImageSize(char* pBuffer, int size);
 };
-// TODO: 소켓 보내는 함수 만들어야함. 그다음은 우선순위 큐에 넣기,
+// TODO: 소켓 보내는 함수 만들어야함. 그다음은 우선순위 큐에 넣기

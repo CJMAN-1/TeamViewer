@@ -43,6 +43,7 @@ void cjSocket::err_display(char* msg){
 /*설정한 port번호로 udp 소켓을 만들고 bind한다. bind에 실패하면 0을 반환한다.*/
 int  cjSocket::BindUdpSock(int port) {
 	udp_sock = new SOCKET;
+	*udp_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	ZeroMemory(&my_sockAddr, sizeof(my_sockAddr));
 	my_sockAddr.sin_family = AF_INET;
 	my_sockAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
@@ -76,6 +77,8 @@ void cjSocket::TransImage(char *source, int dataSize) {
 	PutImageSize(ImageBuf, dataSize);
 	sendto(*udp_sock, ImageBuf, IMAGETRANSBUF_SIZE, 0, (sockaddr*)&other_sockAddr, sizeof(other_sockAddr));
 
+
+
 	for (int i = 0; i < (dataSize / IMAGEDATA_SIZE) + 1; i++) {
 		PutImage(source, ImageBuf, i);
 		sendto(*udp_sock, ImageBuf, IMAGETRANSBUF_SIZE, 0, (sockaddr*)&other_sockAddr, sizeof(other_sockAddr));
@@ -102,5 +105,6 @@ void cjSocket::PutImage(char* source, char* destination, int index) {
 
 void cjSocket::PutImageSize(char* pBuffer, int size) {
 	InsertTimeStamp(pBuffer);
+	pBuffer[TIMESTAMP_SIZE] = IMAGESIZE_TYPE;
 	sprintf(pBuffer + HEADER_SIZE, "%d", size);
 }

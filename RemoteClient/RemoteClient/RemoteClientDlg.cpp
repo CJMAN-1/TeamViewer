@@ -124,6 +124,11 @@ BOOL CRemoteClientDlg::OnInitDialog()
 	SOCK.RegisterOtherSock("127.0.0.1", 9900);
 
 	SOCK.TransImage((char*)pJpgData, jpgDataSize);
+
+	imageBufferStream->Release();
+	::GlobalFree(imageBuffer);
+	capScreen.ReleaseDC();
+	closesocket(*SOCK.udp_sock);
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 

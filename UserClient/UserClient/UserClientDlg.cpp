@@ -111,11 +111,19 @@ BOOL CUserClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 	
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	SOCK.BindUdpSock(9900);
-	SOCK.RegisterOtherSock("127.0.0.1", 9000);
-	int addrlen = sizeof(SOCK.other_sockAddr);
-//	recvfrom(*SOCK.udp_sock, buf + i * 1000, 1000, 0, (sockaddr *)&SOCK.other_sockAddr,&addrlen);
+	SOCK.retval = SOCK.BindUdpSock(9900);
+//	SOCK.RegisterOtherSock("127.0.0.1", 9000);
 
+	/*이미지 받는 부분 지우지 말자, 앞에 소켓만 만들어주고 사용하면 됌
+	int addrlen = sizeof(SOCK.other_sockAddr);
+	for (int i = 0; i < 100; i++) {
+		SOCK.retval = recvfrom(*SOCK.udp_sock, SOCK.ImageBuf , 1008, 0, (sockaddr *)&SOCK.other_sockAddr, &addrlen);
+	}
+	*/
+	imageBufferStream->Release();
+	::GlobalFree(imageBuffer);
+	capScreen.ReleaseDC();
+	closesocket(*SOCK.udp_sock);
 	return FALSE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
